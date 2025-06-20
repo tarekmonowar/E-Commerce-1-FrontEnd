@@ -1,31 +1,38 @@
 import { useSelector } from "react-redux";
+import { Navigate } from "react-router-dom";
 import AdminSidebar from "../../../components/admin/AdminSidebar";
 import { BarChart } from "../../../components/admin/Charts";
-import { RootState } from "../../../redux/store";
-import { useBarQuery } from "../../../redux/api/dashboardApi";
-import { Navigate } from "react-router-dom";
 import { Skeleton } from "../../../components/Loader";
-const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "Aug",
-  "Sept",
-  "Oct",
-  "Nov",
-  "Dec",
-];
+import { useBarQuery } from "../../../redux/api/dashboardApi";
+import { RootState } from "../../../redux/store";
+import { getLastMonths } from "../../../utils/features";
+
+// const months = [
+//   "January",
+//   "February",
+//   "March",
+//   "April",
+//   "May",
+//   "June",
+//   "July",
+//   "Aug",
+//   "Sept",
+//   "Oct",
+//   "Nov",
+//   "Dec",
+// ];
+
+const { last12Months, last6Months } = getLastMonths();
+
+// console.log("last12Months", last12Months);
+// console.log("last6Months", last6Months);
 
 const Barcharts = () => {
   const { user } = useSelector((state: RootState) => state.userReducer);
 
   const { isLoading, data, isError } = useBarQuery(user ? user._id : "");
 
-  if (!data?.charts) return <p>Loading or no data available</p>;
+  if (!data?.charts) return; //!remove it otherwise skelton cannot work and fixed data? undifine problem
 
   const charts = data.charts;
 
@@ -41,6 +48,7 @@ const Barcharts = () => {
           <>
             <section>
               <BarChart
+                labels={last6Months}
                 data_2={charts.users}
                 data_1={charts.products}
                 title_1="Products"
@@ -60,7 +68,7 @@ const Barcharts = () => {
                 title_2=""
                 bgColor_1={`hsl(180, 40%, 50%)`}
                 bgColor_2=""
-                labels={months}
+                labels={last12Months}
               />
               <h2>Orders throughout the year</h2>
             </section>

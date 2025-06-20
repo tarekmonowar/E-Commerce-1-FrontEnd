@@ -1,17 +1,17 @@
+import { useSelector } from "react-redux";
+import { Navigate } from "react-router-dom";
 import AdminSidebar from "../../../components/admin/AdminSidebar";
 import { DoughnutChart, PieChart } from "../../../components/admin/Charts";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../redux/store";
-import { Navigate } from "react-router-dom";
-import { usePieQuery } from "../../../redux/api/dashboardApi";
 import { Skeleton } from "../../../components/Loader";
+import { usePieQuery } from "../../../redux/api/dashboardApi";
+import { RootState } from "../../../redux/store";
 
 const PieCharts = () => {
   const { user } = useSelector((state: RootState) => state.userReducer);
 
   const { isLoading, data, isError } = usePieQuery(user ? user._id : "");
 
-  if (!data?.charts) return <p>Loading or no data available</p>;
+  if (!data?.charts) return; //!remove it otherwise skelton cannot work and fixed data? undifine problem
 
   const charts = data.charts;
 
