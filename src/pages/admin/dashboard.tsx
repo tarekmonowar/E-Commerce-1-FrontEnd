@@ -11,6 +11,9 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { Navigate } from "react-router-dom";
 import { Skeleton } from "../../components/Loader";
+import { getLastMonths } from "../../utils/features";
+
+const { last6Months } = getLastMonths();
 
 const userImg =
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJxA5cTf-5dh5Eusm0puHbvAhOrCRPtckzjA&usqp";
@@ -79,6 +82,7 @@ export default function Dashboard() {
                 <h2>Revenue & Transaction</h2>
 
                 <BarChart
+                  labels={last6Months}
                   data_1={stats.chart.revenue}
                   data_2={stats.chart.order}
                   title_1="Revenue"
