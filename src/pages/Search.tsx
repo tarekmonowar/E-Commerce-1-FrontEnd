@@ -131,7 +131,7 @@ export default function Search() {
                 price={i.price}
                 stock={i.stock}
                 handler={addToCartHandler}
-                photos={i.photo}
+                photos={i.photos}
               />
             ))}
           </div>

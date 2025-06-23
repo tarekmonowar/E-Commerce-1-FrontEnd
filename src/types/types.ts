@@ -16,7 +16,10 @@ export type Product = {
   ratings: number;
   numOfReviews: number;
   description: string;
-  photo: string;
+  photos: {
+    url: string;
+    public_id: string;
+  }[];
   _id: string;
 };
 //  //{

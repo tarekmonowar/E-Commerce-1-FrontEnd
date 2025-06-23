@@ -13,7 +13,6 @@ import { CustomError } from "../../../types/api-types";
 import toast from "react-hot-toast";
 import { Order } from "../../../types/types";
 import { Skeleton } from "../../../components/Loader";
-import { server } from "../../../redux/store";
 import { responseToast } from "./../../../utils/features";
 
 type OrderItem = {
@@ -130,7 +129,7 @@ const TransactionManagement = () => {
                 <ProductCard
                   key={i._id}
                   name={i.name}
-                  photo={`${server}/${i.photo}`}
+                  photo={`${i.photo}`}
                   // productId={i.productId}
                   _id={i._id}
                   quantity={i.quantity}

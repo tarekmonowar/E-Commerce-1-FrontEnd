@@ -10,7 +10,6 @@ import {
   useUpdateProductMutation,
 } from "../../../redux/api/productApi";
 import { useNavigate, useParams } from "react-router-dom";
-import { server } from "../../../redux/store";
 import { Skeleton } from "../../../components/Loader";
 import { responseToast } from "../../../utils/features";
 
@@ -26,8 +25,8 @@ const Productmanagement = () => {
   const [deleteProduct] = useDeleteProductMutation();
   const [updateProduct] = useUpdateProductMutation();
 
-  const { photo, name, price, stock, category } = data?.product || {
-    photo: "",
+  const { photos, name, price, stock, category } = data?.product || {
+    photos: [],
     name: "",
     price: 0,
     stock: 0,
@@ -38,25 +37,34 @@ const Productmanagement = () => {
   const [stockUpdate, setStockUpdate] = useState<number>(stock);
   const [nameUpdate, setNameUpdate] = useState<string>(name);
   const [categoryUpdate, setCategoryUpdate] = useState<string>(category);
-  const [photoUpdate, setPhotoUpdate] = useState<string>("");
-  const [photoFile, setPhotoFile] = useState<File>();
+  const [photoUpdate, setPhotoUpdate] = useState<string[]>([]);
+  const [photoFile, setPhotoFile] = useState<File[] | undefined>(undefined);
 
   // console.log(photoFile, setCategory); //! remove this
 
   const changeImageHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    const file: File | undefined = e.target.files?.[0];
-
-    const reader: FileReader = new FileReader();
-
-    if (file) {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const fileArray = Array.from(files);
+    const previews: string[] = [];
+    const photoFiles: File[] = [];
+    fileArray.forEach((file) => {
+      const reader = new FileReader();
       reader.readAsDataURL(file);
+
       reader.onloadend = () => {
         if (typeof reader.result === "string") {
-          setPhotoUpdate(reader.result);
-          setPhotoFile(file);
+          previews.push(reader.result);
+          photoFiles.push(file);
+
+          // Once all files are processed, update state
+          if (previews.length === fileArray.length) {
+            setPhotoUpdate(previews);
+            setPhotoFile(photoFiles);
+          }
         }
       };
-    }
+    });
   };
 
   const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
@@ -71,7 +79,11 @@ const Productmanagement = () => {
 
     if (categoryUpdate) formData.append("category", categoryUpdate);
 
-    if (photoFile) formData.append("photo", photoFile);
+    if (photoFile && photoFile.length > 0) {
+      photoFile.forEach((file) => {
+        formData.append("photos", file); // note: use "photos" if your backend expects that
+      });
+    }
 
     const userId = user?._id || "";
     const productId = data?.product._id || "";
@@ -107,7 +119,16 @@ const Productmanagement = () => {
           <>
             <section>
               <strong>ID - {data?.product._id}</strong>
-              <img src={`${server}/${photo}`} alt="Product" />
+              <img
+                src={
+                  typeof photos === "string"
+                    ? photos
+                    : photos && photos[0] && typeof photos[0] === "object"
+                    ? photos[0].url
+                    : ""
+                }
+                alt="Product"
+              />
               <p>{name}</p>
               {stock > 0 ? (
                 <span className="green">{stock} Available</span>
@@ -162,10 +183,23 @@ const Productmanagement = () => {
 
                 <div>
                   <label>Photo</label>
-                  <input type="file" onChange={changeImageHandler} />
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={changeImageHandler}
+                  />
                 </div>
 
-                {photoUpdate && <img src={photoUpdate} alt="New Image" />}
+                {photoUpdate.length > 0 &&
+                  photoUpdate.map((imgSrc, index) => (
+                    <img
+                      key={index}
+                      src={imgSrc}
+                      alt={`Preview ${index + 1}`}
+                      width={100}
+                    />
+                  ))}
                 <button type="submit">Update</button>
               </form>
             </article>

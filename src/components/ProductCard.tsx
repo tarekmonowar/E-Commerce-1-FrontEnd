@@ -1,7 +1,6 @@
 import { FaExpandAlt, FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { CartItem } from "../types/types";
-import { server } from "../redux/store";
 // import { transformImage } from "../utils/features";
 
 // const server = "http://localhost:5000"; //transformImage(photos?.[0]?.url, 400)
@@ -13,7 +12,10 @@ import { server } from "../redux/store";
 
 type ProductsProps = {
   productId: string;
-  photos: string;
+  photos: {
+    url: string;
+    public_id: string;
+  }[];
   name: string;
   price: number;
   stock: number;
@@ -30,7 +32,7 @@ const ProductCard = ({
 }: ProductsProps) => {
   return (
     <div className="product-card">
-      <img src={`${server}/${photos}`} alt={name} />
+      <img src={`${photos[0]?.url}`} alt={name} />
       <p>{name}</p>
       <span>₹{price}</span>
 
@@ -41,7 +43,7 @@ const ProductCard = ({
               productId,
               price,
               name,
-              photo: photos,
+              photo: photos[0].url,
               stock,
               quantity: 1,
             })

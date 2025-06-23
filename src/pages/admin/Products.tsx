@@ -6,7 +6,6 @@ import { ReactElement, useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useAllProductsQuery } from "../../redux/api/productApi";
-import { server } from "../../redux/store";
 import toast from "react-hot-toast";
 import { CustomError } from "../../types/api-types";
 import { useSelector } from "react-redux";
@@ -148,7 +147,7 @@ const Products = () => {
     if (data) {
       setRows(
         data.products.map((i) => ({
-          photo: <img key={i._id} src={`${server}/${i.photo}`} alt={i.name} />,
+          photo: <img key={i._id} src={`${i.photos[0].url}`} alt={i.name} />,
           name: i.name,
           price: i.price,
           stock: i.stock,

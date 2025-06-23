@@ -16,6 +16,7 @@ import NotFound from "./pages/not-found";
 //main route import
 const Home = lazy(() => import("./pages/home"));
 const Search = lazy(() => import("./pages/Search"));
+const PopductDetails = lazy(() => import("./pages/productDetails"));
 const Cart = lazy(() => import("./pages/Cart"));
 const Shipping = lazy(() => import("./pages/Shipping"));
 const Login = lazy(() => import("./pages/Login"));
@@ -99,6 +100,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/search" element={<Search />} />
+          <Route path="/product/:id" element={<PopductDetails />} />
           <Route path="/cart" element={<Cart />} />
 
           {/* //!......................not login route mane user na takle true hobe login acces kora jabe but user takle false hobe login jawa jabe na */}
