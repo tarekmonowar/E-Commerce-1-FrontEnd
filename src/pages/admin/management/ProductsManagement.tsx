@@ -25,18 +25,21 @@ const Productmanagement = () => {
   const [deleteProduct] = useDeleteProductMutation();
   const [updateProduct] = useUpdateProductMutation();
 
-  const { photos, name, price, stock, category } = data?.product || {
-    photos: [],
-    name: "",
-    price: 0,
-    stock: 0,
-    category: "",
-  };
+  const { photos, name, price, stock, category, description } =
+    data?.product || {
+      photos: [],
+      name: "",
+      price: 0,
+      stock: 0,
+      category: "",
+      description: "",
+    };
 
   const [priceUpdate, setPriceUpdate] = useState<number>(price);
   const [stockUpdate, setStockUpdate] = useState<number>(stock);
   const [nameUpdate, setNameUpdate] = useState<string>(name);
   const [categoryUpdate, setCategoryUpdate] = useState<string>(category);
+  const [desUpdate, setDesUpdate] = useState<string>(description);
   const [photoUpdate, setPhotoUpdate] = useState<string[]>([]);
   const [photoFile, setPhotoFile] = useState<File[] | undefined>(undefined);
 
@@ -78,6 +81,7 @@ const Productmanagement = () => {
       formData.append("stock", stockUpdate.toString());
 
     if (categoryUpdate) formData.append("category", categoryUpdate);
+    if (desUpdate) formData.append("description", desUpdate);
 
     if (photoFile && photoFile.length > 0) {
       photoFile.forEach((file) => {
@@ -101,11 +105,18 @@ const Productmanagement = () => {
 
   useEffect(() => {
     if (data) {
-      const { name, price, stock, category } = data.product;
+      const { name, price, stock, category, description, photos } =
+        data.product;
       setNameUpdate(name);
       setPriceUpdate(price);
       setStockUpdate(stock);
       setCategoryUpdate(category);
+      setDesUpdate(description);
+      if (Array.isArray(photos)) {
+        setPhotoUpdate(photos.map((photo) => photo.url)); // extract only URLs
+      } else {
+        setPhotoUpdate([]); // fallback
+      }
     }
   }, [data]);
 
@@ -180,6 +191,16 @@ const Productmanagement = () => {
                     onChange={(e) => setCategoryUpdate(e.target.value)}
                   />
                 </div>
+                <div>
+                  <label>Description</label>
+
+                  <textarea
+                    required
+                    placeholder="Description..."
+                    value={desUpdate}
+                    onChange={(e) => setDesUpdate(e.target.value)}
+                  />
+                </div>
 
                 <div>
                   <label>Photo</label>
@@ -191,15 +212,20 @@ const Productmanagement = () => {
                   />
                 </div>
 
-                {photoUpdate.length > 0 &&
-                  photoUpdate.map((imgSrc, index) => (
-                    <img
-                      key={index}
-                      src={imgSrc}
-                      alt={`Preview ${index + 1}`}
-                      width={100}
-                    />
-                  ))}
+                {photoUpdate.length > 0 && (
+                  <div
+                    style={{ display: "flex", gap: "1rem", overflowX: "auto" }}
+                  >
+                    {photoUpdate.map((imgSrc, index) => (
+                      <img
+                        key={index}
+                        src={imgSrc}
+                        alt={`Preview ${index + 1}`}
+                        width={100}
+                      />
+                    ))}
+                  </div>
+                )}
                 <button type="submit">Update</button>
               </form>
             </article>

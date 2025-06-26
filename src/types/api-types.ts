@@ -144,6 +144,27 @@ export type AllDiscountResponse = {
   success: boolean;
   coupons: CouponType[];
 };
+export type createDiscountRequest = {
+  id: string;
+  formData: {
+    coupon: string;
+    amount: number;
+  };
+};
+
+export type updateDiscountRequest = {
+  userId: string;
+  couponId: string;
+  formData: {
+    code: string;
+    amount: number;
+  };
+};
+
+export type singleCouponRequest = {
+  userId: string;
+  couponId: string;
+};
 
 export type SingleDiscountResponse = {
   success: boolean;

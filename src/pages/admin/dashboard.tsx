@@ -156,11 +156,12 @@ const WidgetItem = ({
       <h4>{amount ? `₹${value}` : value}</h4>
       {percent > 0 ? (
         <span className="green">
-          <HiTrendingUp /> +{percent}%{" "}
+          <HiTrendingUp /> +{`${percent > 10000 ? 9999 : percent}%`}{" "}
         </span>
       ) : (
         <span className="red">
-          <HiTrendingDown /> {percent}%{" "}
+          <HiTrendingDown />
+          {`${percent < -10000 ? -9999 : percent}%`}{" "}
         </span>
       )}
     </div>
@@ -179,7 +180,8 @@ const WidgetItem = ({
           color,
         }}
       >
-        {percent}%
+        {percent > 0 && `${percent > 10000 ? 9999 : percent}%`}
+        {percent < 0 && `${percent < -10000 ? -9999 : percent}%`}
       </span>
     </div>
   </article>

@@ -9,6 +9,7 @@ import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
 import { addToCart } from "../redux/reducer/cartReducer";
 import { useDispatch } from "react-redux";
 import { CartItem } from "../types/types";
+import RatingsComponent from "../components/ratings";
 
 export default function ProductDetails() {
   const params = useParams();
@@ -40,7 +41,6 @@ export default function ProductDetails() {
     dispatch(addToCart(cartItem));
     toast.success("Added to cart");
   };
-
   return (
     <div className="product-details">
       {isLoading ? (
@@ -68,12 +68,12 @@ export default function ProductDetails() {
               {" "}
               <code>{data?.product?.category}</code>
               <h1>{data?.product?.name}</h1>
-              {/* <em
+              <em
                 style={{ display: "flex", gap: "1rem", alignItems: "center" }}
               >
                 <RatingsComponent value={data?.product?.ratings || 0} />(
                 {data?.product?.numOfReviews} reviews)
-              </em> */}
+              </em>
               <h3>₹{data?.product?.price}</h3>
               <article>
                 <div>

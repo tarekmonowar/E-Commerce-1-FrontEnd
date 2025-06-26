@@ -19,6 +19,7 @@ const NewProduct = () => {
   const [category, setCategory] = useState<string>("");
   const [price, setPrice] = useState<number>(1000);
   const [stock, setStock] = useState<number>(1);
+  const [description, setDescription] = useState<string>("");
   const [photoPrev, setPhotoPrev] = useState<string[]>([]);
   const [photos, setPhotos] = useState<File[] | undefined>(undefined);
 
@@ -69,6 +70,7 @@ const NewProduct = () => {
       //Use FormData only when you're sending files (e.g. image uploads):You cannot send files like photo: file using JSON. FormData handles multipart/form-data under the hood.req.body will not contain the file unless you're using a file middleware (like multer).
       const formData = new FormData();
       formData.set("name", name);
+      formData.set("description", description);
       formData.set("category", category);
       formData.set("price", price.toString());
       formData.set("stock", stock.toString());
@@ -141,6 +143,15 @@ const NewProduct = () => {
                 onChange={(e) => setCategory(e.target.value)}
               />
             </div>
+            <div>
+              <label>Description</label>
+              <textarea
+                required
+                placeholder="Description..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </div>
 
             <div>
               <label>Photos</label>
@@ -153,15 +164,18 @@ const NewProduct = () => {
               />
             </div>
 
-            {photoPrev.length > 0 &&
-              photoPrev.map((imgSrc, index) => (
-                <img
-                  key={index}
-                  src={imgSrc}
-                  alt={`Preview ${index + 1}`}
-                  width={100}
-                />
-              ))}
+            {photoPrev.length > 0 && (
+              <div style={{ display: "flex", gap: "1rem", overflowX: "auto" }}>
+                {photoPrev.map((imgSrc, index) => (
+                  <img
+                    key={index}
+                    src={imgSrc}
+                    alt={`Preview ${index + 1}`}
+                    width={100}
+                  />
+                ))}
+              </div>
+            )}
 
             <button disabled={isLoading} type="submit">
               {isLoading ? "Creating..." : "Create"}
