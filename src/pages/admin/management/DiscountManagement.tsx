@@ -25,6 +25,10 @@ const DiscountManagement = () => {
   const [updateDiscount] = useUpdateDiscountMutation();
   const [deleteCoupon] = useDeleteCouponMutation();
 
+  const [btnLoading, setBtnLoading] = useState<boolean>(false);
+
+  const [code, setCode] = useState("");
+  const [amount, setAmount] = useState(0);
   // console.log("data in tm", data);
 
   useEffect(() => {
@@ -33,11 +37,6 @@ const DiscountManagement = () => {
       setAmount(data.coupon.amount);
     }
   }, [data]);
-
-  const [btnLoading, setBtnLoading] = useState<boolean>(false);
-
-  const [code, setCode] = useState("");
-  const [amount, setAmount] = useState(0);
 
   const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
     // submit handler
