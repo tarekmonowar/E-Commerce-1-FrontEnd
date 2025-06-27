@@ -2,7 +2,6 @@ import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 import { motion } from "framer-motion";
-import videoCover from "../assets/videos/cover.mp4";
 
 import {
   useCategoriesQuery,
@@ -18,6 +17,9 @@ import { LuShieldCheck } from "react-icons/lu";
 import { FaHeadset } from "react-icons/fa";
 import { Slider } from "6pp";
 import { FaAnglesDown } from "react-icons/fa6";
+
+const videoCover =
+  "https://res.cloudinary.com/dlayfdbyq/video/upload/v1751051649/cover_lnq013.mp4";
 
 //animation and footer statis
 
