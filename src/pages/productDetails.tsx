@@ -1,15 +1,24 @@
 import { useParams } from "react-router-dom";
-import { useProductDetailsQuery } from "../redux/api/productApi";
+import {
+  useAllReviewsOfProductsQuery,
+  useDeleteReviewMutation,
+  useNewReviewMutation,
+  useProductDetailsQuery,
+} from "../redux/api/productApi";
 import { Skeleton } from "../components/Loader";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { CustomError } from "../types/api-types";
-import { Slider, MyntraCarousel, CarouselButtonType } from "6pp";
+import { Slider, MyntraCarousel, CarouselButtonType, useRating } from "6pp";
 import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
 import { addToCart } from "../redux/reducer/cartReducer";
-import { useDispatch } from "react-redux";
-import { CartItem } from "../types/types";
+import { useDispatch, useSelector } from "react-redux";
+import { CartItem, Review } from "../types/types";
 import RatingsComponent from "../components/ratings";
+import { FiEdit } from "react-icons/fi";
+import { RootState } from "../redux/store";
+import { responseToast } from "../utils/features";
+import { FaRegStar, FaStar, FaTrash } from "react-icons/fa";
 
 export default function ProductDetails() {
   const params = useParams();
@@ -17,9 +26,18 @@ export default function ProductDetails() {
 
   const [carouselOpen, setCarouselOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [reviewComment, setReviewComment] = useState("");
+  const reviewDialogRef = useRef<HTMLDialogElement>(null);
+  const [reviewSubmitLoading, setReviewSubmitLoading] = useState(false);
+
+  const [createReview] = useNewReviewMutation();
+  const [deleteReview] = useDeleteReviewMutation();
 
   const productId = params.id as string;
+  const { user } = useSelector((state: RootState) => state.userReducer);
   const { data, isLoading, isError, error } = useProductDetailsQuery(productId);
+  const reviewsResponse = useAllReviewsOfProductsQuery(params.id!);
+
   useEffect(() => {
     if (isError) {
       const err = error as CustomError;
@@ -41,6 +59,56 @@ export default function ProductDetails() {
     dispatch(addToCart(cartItem));
     toast.success("Added to cart");
   };
+
+  const showDialog = () => {
+    reviewDialogRef.current?.showModal();
+  };
+
+  const {
+    Ratings: RatingsEditable,
+    rating,
+    setRating,
+  } = useRating({
+    IconFilled: <FaStar />,
+    IconOutline: <FaRegStar />,
+    value: 0,
+    selectable: true,
+    styles: {
+      fontSize: "1.75rem",
+      color: "coral",
+      justifyContent: "flex-start",
+    },
+  });
+
+  const reviewCloseHandler = () => {
+    reviewDialogRef.current?.close();
+    setRating(0);
+    setReviewComment("");
+  };
+
+  const submitReview = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setReviewSubmitLoading(true);
+    reviewCloseHandler();
+
+    const res = await createReview({
+      comment: reviewComment,
+      rating,
+      userId: user?._id,
+      productId: params.id!,
+    });
+
+    setReviewSubmitLoading(false);
+
+    responseToast(res, null, "");
+
+    // API call to submit review
+  };
+  const handleDeleteReview = async (reviewId: string) => {
+    const res = await deleteReview({ reviewId, userId: user?._id });
+    responseToast(res, null, "");
+  };
+
   return (
     <div className="product-details">
       {isLoading ? (
@@ -101,11 +169,91 @@ export default function ProductDetails() {
           </main>
         </>
       )}
+      {/* // !out side main div but in div */}
+      <dialog ref={reviewDialogRef} className="review-dialog">
+        <button onClick={reviewCloseHandler}>X</button>
+        <h2>Write a Review</h2>
+        <form onSubmit={submitReview}>
+          <textarea
+            value={reviewComment}
+            onChange={(e) => setReviewComment(e.target.value)}
+            placeholder="Review..."
+          ></textarea>
+          <RatingsEditable />
+          <button disabled={reviewSubmitLoading} type="submit">
+            Submit
+          </button>
+        </form>
+      </dialog>
+
+      <section>
+        <article>
+          <h2>Reviews</h2>
+
+          {reviewsResponse.isLoading
+            ? null
+            : user && (
+                <button onClick={showDialog}>
+                  <FiEdit />
+                </button>
+              )}
+        </article>
+        <div
+          style={{
+            display: "flex",
+            gap: "2rem",
+            overflowX: "auto",
+            padding: "2rem",
+          }}
+        >
+          {reviewsResponse.isLoading ? (
+            <>
+              <Skeleton width="45rem" length={5} />
+              <Skeleton width="45rem" length={5} />
+              <Skeleton width="45rem" length={5} />
+            </>
+          ) : (
+            reviewsResponse.data?.reviews.map((review) => (
+              <ReviewCard
+                handleDeleteReview={handleDeleteReview}
+                userId={user?._id}
+                key={review._id}
+                review={review}
+              />
+            ))
+          )}
+        </div>
+      </section>
     </div>
   );
 }
 
 //out side the component
+
+const ReviewCard = ({
+  review,
+  userId,
+  handleDeleteReview,
+}: {
+  userId?: string;
+  review: Review;
+  handleDeleteReview: (reviewId: string) => void;
+}) => (
+  <div className="review">
+    <RatingsComponent value={review.rating} />
+    <p>{review.comment}</p>
+    <div>
+      <img src={review.user.photo} alt="User" />
+      <small>{review.user.name}</small>
+    </div>
+    {userId === review.user._id && (
+      <button onClick={() => handleDeleteReview(review._id)}>
+        <FaTrash />
+      </button>
+    )}
+  </div>
+);
+
 const ProductLoader = () => {
   return (
     <div

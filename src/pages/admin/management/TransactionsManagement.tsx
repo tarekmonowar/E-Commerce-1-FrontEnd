@@ -13,7 +13,7 @@ import { CustomError } from "../../../types/api-types";
 import toast from "react-hot-toast";
 import { Order } from "../../../types/types";
 import { Skeleton } from "../../../components/Loader";
-import { responseToast } from "./../../../utils/features";
+import { responseToast, transformImage } from "./../../../utils/features";
 
 type OrderItem = {
   name: string;
@@ -184,7 +184,7 @@ const TransactionManagement = () => {
 
 const ProductCard = ({ name, photo, price, quantity, _id }: OrderItem) => (
   <div className="transaction-product-card">
-    <img src={photo} alt={name} />
+    <img src={transformImage(photo)} alt={name} />
     <Link to={`/product/${_id}`}>{name}</Link>
     <span>
       ₹{price} X {quantity} = ₹{price * quantity}

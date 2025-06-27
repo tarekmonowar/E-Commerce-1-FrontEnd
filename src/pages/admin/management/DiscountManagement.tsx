@@ -29,7 +29,7 @@ const DiscountManagement = () => {
 
   const [code, setCode] = useState("");
   const [amount, setAmount] = useState(0);
-  console.log("data in tm", data);
+  // console.log("data in tm", data);
 
   useEffect(() => {
     if (data?.coupon) {

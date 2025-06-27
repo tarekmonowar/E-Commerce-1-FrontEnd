@@ -11,12 +11,15 @@ import { CartItem } from "../types/types";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../redux/reducer/cartReducer";
 import { CartReducerInitialState } from "../types/reducer-types";
+import { useSearchParams } from "react-router-dom";
 
 export default function Search() {
+  const searchQuery = useSearchParams()[0]; //when home catagory select its cometo and set category
+
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("");
   const [maxPrice, setMaxPrice] = useState(100000);
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState(searchQuery.get("category") || "");
   const [page, setPage] = useState(1);
 
   const dispatch = useDispatch();
